@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>노크 크루 가이드</title>
+<style>
+/* VOICE: 옆에서 화면을 짚어 주는 친절한 선배. 짧게, 한 번에 하나
+   IDEA: 앱 온보딩 — 문 세 개, 한 화면에 한 단계, 다음 버튼 하나
+   PICTURE: 빨간 테두리로 누를 곳을 표시한 실제 화면
+   COLOUR and TYPE: 애플 지원 화면. 리더는 파랑, 처음 리더는 보라, 리포터는 초록
+   LAYOUT: 휴대폰 한 손 기준. 아래쪽 큰 버튼 */
+:root{color-scheme:light dark;--bg:light-dark(#f5f5f7,#000);--card:light-dark(#fff,#1c1c1e);--ink:light-dark(#1d1d1f,#f5f5f7);--sub:light-dark(#515154,#b4b4ba);--sep:light-dark(rgba(60,60,67,.14),rgba(84,84,88,.6));--fill:light-dark(rgba(120,120,128,.12),rgba(120,120,128,.24));--blue:light-dark(#0071e3,#2997ff);--purple:light-dark(#8944ab,#bf5af2);--green:light-dark(#1f8f4e,#30d158);--red:#ff3b30;--c:var(--blue)}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:18px/1.55 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",system-ui,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-x:clip}
+button{font:inherit;color:inherit}
+.app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:max(20px,env(safe-area-inset-top)) 18px 0}
+.top{display:flex;align-items:center;gap:10px;min-height:44px}
+.back{border:0;background:none;color:var(--c);font-size:17px;padding:8px 4px;cursor:pointer}
+.bar{flex:1;height:5px;border-radius:5px;background:var(--fill);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c);border-radius:5px;transition:width .35s ease}
+.count{font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums;min-width:3.2em;text-align:right}
+main{flex:1;padding:8px 0 24px}
+.eyebrow{display:inline-block;font-size:14px;font-weight:700;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent);border-radius:980px;padding:4px 12px;margin-top:8px}
+h1{font-size:34px;line-height:1.18;letter-spacing:-.02em;margin:12px 0 8px}
+h2{font-size:27px;line-height:1.25;letter-spacing:-.015em;margin:12px 0 8px}
+.lede{color:var(--sub);margin:0 0 20px}
+p{margin:0 0 12px}
+.door{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:var(--card);border-radius:20px;padding:20px 18px;margin:0 0 12px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform .15s ease}
+.door:active{transform:scale(.98)}
+.door .dot{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:19px}
+.door b{display:block;font-size:20px;line-height:1.3}
+.door span{display:block;color:var(--sub);font-size:15px;margin-top:2px}
+.door .chev{margin-left:auto;color:var(--sub);font-size:22px}
+.card{background:var(--card);border-radius:18px;padding:18px;margin:0 0 12px}
+.shot{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--sep);margin:6px 0 12px;background:var(--card)}
+.tip{background:color-mix(in srgb,var(--c) 10%,var(--card));border-radius:14px;padding:12px 14px;font-size:16px;margin:0 0 12px}
+.warn{border-left:4px solid var(--red);background:var(--card);border-radius:12px;padding:12px 14px;font-size:16px;margin:0 0 12px}
+.warn b{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td{padding:11px 6px;border-top:1px solid var(--sep);vertical-align:top}
+tr:first-child td{border-top:0}
+td:first-child{font-weight:700;color:var(--c);white-space:nowrap;width:7.4em}
+pre{white-space:pre-wrap;background:var(--fill);border-radius:12px;padding:12px 14px;font:16px/1.6 inherit;font-family:inherit;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grid a,.link{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;background:var(--fill);color:var(--c);font-weight:600;text-decoration:none;font-size:16px;text-align:center;padding:6px}
+.link{margin:0 0 12px}
+.foot{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:18px 0 max(18px,env(safe-area-inset-bottom));display:flex;gap:10px}
+.btn{flex:1;min-height:54px;border:0;border-radius:16px;background:var(--c);color:#fff;font-weight:700;font-size:18px;cursor:pointer}
+.btn.ghost{flex:0 0 34%;background:var(--fill);color:var(--ink);font-weight:600}
+.btn:active{opacity:.85}
+:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 0}
+.jump button{border:0;background:var(--fill);color:var(--c);border-radius:980px;padding:8px 14px;font-size:15px;font-weight:600;cursor:pointer}
+.done{text-align:center;padding-top:24px}
+.done .big{font-size:64px;line-height:1}
+.small{font-size:14px;color:var(--sub)}
+.fade{animation:f .28s ease}
+@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+const BREEZE='https://knockchurch.breezechms.com/login';
+const NB='https://my.notebird.app';
+const FORMS=[['01 화요 온라인','30c5708939'],['02 화요 저녁','30c5708947'],['03 수요 오전','30c5708912'],['04 목요 저녁','30c5708936'],['05 금요 저녁','30c57089364139'],['06 토요 오전','30c570893641'],['07 토요 오후','30c57089'],['08 토요 강서','30c570894734']];
+const img=(s,a)=>`<img class="shot" src="img/${s}" alt="${a}" loading="lazy">`;
+const go=(h,t)=>`<a class="link" href="${h}" target="_blank" rel="noopener">${t}</a>`+(h.includes('breezechms')?'<p class="small" style="margin-top:-6px">버튼이 안 되면 주소창에 <b>knockchurch.breezechms.com</b>을 직접 입력하세요.</p>':'');
+
+const SIGNUP_LEADER=[
+ {t:'메일함에서 초대 메일 찾기',b:`<p>Breeze에서 온 영어 메일입니다.</p><div class="tip">안 보이면 스팸함과 프로모션함을 보고, 메일 검색창에 <b>breeze</b>를 쳐 보세요.</div><div class="tip"><b>초대 메일이 없나요?</b> 계정이 이미 만들어져 있다고 들었다면, 아래 버튼으로 Breeze를 열고 로그인 화면의 <b>Forgot password</b>를 누르세요. 교회에 등록한 이메일을 넣으면 비밀번호를 정하는 메일이 옵니다. 비밀번호를 정했으면 3단계로 건너뛰세요.</div>${go(BREEZE,'Breeze 열기')}`},
+ {t:'메일 속 버튼 누르기',b:`<p>메일 가운데 버튼을 누르면 가입 화면이 열립니다.</p><p>영어라도 괜찮습니다. 칸은 아이디와 비밀번호 두 개뿐입니다.</p>`},
+ {t:'아이디와 비밀번호 정하기',b:`<p>아이디는 <b>내 이메일 주소</b>로 하면 잊지 않습니다.</p><p>휴대폰이 비밀번호를 저장하겠냐고 물으면 <b>저장</b>을 누르세요.</p><div class="warn"><b>꼭 내 아이디로 들어오세요.</b> 교회 컴퓨터나 휴대폰에 다른 아이디가 저장되어 있으면 로그아웃하고 내 아이디로 들어옵니다. 그래야 우리 크루 리포트가 보입니다.</div>`},
+ {t:'홈 화면에 붙여 두기',b:`<p>한 번만 해 두면 다음부터 앱처럼 바로 열립니다.</p><table><tr><td>아이폰</td><td>사파리 아래 공유 버튼 › 홈 화면에 추가</td></tr><tr><td>갤럭시</td><td>크롬 오른쪽 위 점 세 개 › 홈 화면에 추가</td></tr></table><div style="height:12px"></div>${go(BREEZE,'Breeze 열기')}<p class="small">비밀번호를 잊으면 로그인 화면의 Forgot password를 누르세요.</p><div class="tip">가입 직후 메뉴가 <b>Dashboard · My Profile · Give Now</b> 세 개만 보이면 정상입니다. 목사님이나 리더에게 "가입했어요"라고 알리면 우리 크루 권한이 열립니다.</div>`}
+];
+
+const LEADER_TASKS=[
+ {k:'SWOT',t:'SWOT 올리기',d:'크루나잇 당일',b:`<p>베이스캠프 › 우리 크루 프로젝트 › 시즌 SWOT 글로 갑니다.</p>${img('swot.jpg','SWOT 글 아래 댓글 칸에 빨간 테두리')}<p>맨 아래 댓글 칸에 오늘 모임의 강점 · 약점 · 기회 · 위협과 참석 · 불참 인원을 적습니다.</p><div class="tip">리포터는 이 글을 보지 않습니다.</div>`},
+ {k:'출석',t:'주일출석보고',d:'주일 오후 9시까지',b:`<p>오후 5시에 베이스캠프 알림이 옵니다. <b>Add your answer</b>를 누르고 이렇게 적습니다.</p>${img('attendance.jpg','주일출석보고 답 입력 칸에 빨간 테두리')}<pre>2026.11.29 수요오전크루
+총원 11명
+결석 2명
+김○○(몸살), 이○○(지방 출장)</pre>`},
+ {k:'노트버드',t:'노트버드 돌봄 기록',d:'결석자는 주일 오후 9시 · 모두는 2주 안에',b:`<p>노트버드 왼쪽에서 우리 크루를 고르면 우리 크루만 보입니다.</p><div class="tip">노트버드는 따로 설치하는 앱이 없습니다. 크롬이든 사파리든 쓰시는 인터넷으로 열면 됩니다. 아이폰은 공유 › 홈 화면에 추가, 갤럭시는 점 세 개 › 홈 화면에 추가를 누르면 앱처럼 씁니다.</div>${img('nb-people.jpg','노트버드 크루 그룹에 빨간 테두리')}<p>사람을 눌러 <b>Add update</b>. 들은 이야기와 다음에 챙길 날을 한 줄 남깁니다.</p>${img('nb-update.jpg','Add update 버튼에 빨간 테두리')}<pre>김○○ — 주일 결석
+12/1 통화. 몸살로 많이 지쳐 있음. 함께 기도함.
+→ 수요일 안부 연락.</pre><div class="tip">순서: 주일 결석자 먼저, 그다음 마지막 기록이 2주 넘은 크루원.</div>${go(NB,'노트버드 열기')}`},
+ {k:'리포트',t:'크루 리포트 읽기',d:'리포터가 크루나잇 당일 올립니다',b:`<p>리포터가 제출하면 <b>"OO CREW REPORT: New Entry"</b> 메일이 옵니다. 지난 리포트는 Breeze에서 봅니다.</p><p><b>1.</b> 위쪽 More › Forms</p>${img('br-menu.jpg','More 메뉴의 Forms에 빨간 테두리')}<p><b>2.</b> 우리 크루 리포트 › View Entries</p>${img('br-list.jpg','View Entries에 빨간 테두리')}<p><b>3.</b> 맨 위가 최근 리포트. View를 누르면 기도제목과 크루원 소식이 나옵니다.</p>${img('br-entries.jpg','가장 위 View 버튼에 빨간 테두리, 이름은 가림')}<div class="tip">노트버드를 쓸 때 옆에 띄워 두고 참고하세요.</div>${go(BREEZE,'Breeze 열기')}`}
+];
+
+const LEADER_END=`<table>
+<tr><td>크루나잇 당일</td><td>SWOT → 베이스캠프</td></tr>
+<tr><td>주일 오후 9시</td><td>주일출석보고 → 베이스캠프</td></tr>
+<tr><td>주일 오후 9시</td><td>결석자 돌봄 기록 → 노트버드</td></tr>
+<tr><td>2주 안에</td><td>모든 크루원 돌봄 기록 → 노트버드</td></tr>
+<tr><td>수시로</td><td>크루 리포트 읽기 → 메일 · Breeze</td></tr></table>`;
+
+const REPORTER=[
+ {t:'처음 한 번만 · 가입',b:`<p>Breeze에서 온 영어 초대 메일을 열고, 메일 속 버튼을 누릅니다.</p><p>아이디는 <b>내 이메일</b>, 비밀번호는 직접 정합니다.</p><div class="warn"><b>꼭 내 아이디로 들어오세요.</b> 로그인 칸에 다른 아이디가 채워져 있으면 지우고 내 이메일을 넣습니다. 그래야 누가 체크인했는지 남습니다.</div><div class="tip"><b>초대 메일이 없나요?</b> 계정이 이미 있는데 처음 들어가는 거라면, Breeze 로그인 화면에서 <b>Forgot password</b>를 누르고 교회에 등록한 이메일을 넣으세요. 비밀번호를 정하는 메일이 옵니다.</div>${go(BREEZE,'Breeze 열기')}<div class="tip">가입 직후 메뉴가 <b>Dashboard · My Profile · Give Now</b> 세 개만 보이면 정상입니다. 목사님이나 리더에게 "가입했어요"라고 알리면 우리 크루 권한이 열립니다.</div><p class="small">이미 가입했다면 다음으로 넘어가세요.</p>`},
+ {t:'체크인 ① Events에서 크루모임 찾기',b:`<p>Breeze 로그인 › 위쪽 <b>Events</b> › 달력에서 오늘 우리 크루모임을 누릅니다.</p><div class="warn"><b>꼭 오늘 날짜</b>의 모임을 누르세요. 다른 날짜에 체크하면 그날 출석으로 잘못 남습니다.</div>${img('step-events.jpg','Events와 크루모임 일정에 빨간 테두리')}${go(BREEZE,'Breeze 열기')}`},
+ {t:'체크인 ② 오른쪽 초록색 Check In',b:`<p>모임을 누르면 창이 뜹니다. 창 <b>오른쪽의 초록색 Check In</b> 버튼을 누르세요.</p>${img('pop-checkin.jpg','크루모임 창에서 초록색 Check In 버튼에 빨간 테두리')}<div class="tip">창 왼쪽에 '크루 리포트 쓰기'가 보여도, <b>체크인을 먼저</b> 하세요. 리포트는 다음 단계입니다.</div>`},
+ {t:'체크인 ③ 온 사람 체크',b:`<p>온 사람 왼쪽 네모를 누르세요. 누르는 순간 저장됩니다.</p>${img('step-checkin.jpg','체크 칸에 빨간 테두리, 이름은 가림')}<div class="tip"><b>저장 버튼은 없습니다.</b> 다 체크했으면 그냥 닫으면 체크인 끝입니다. 잘못 눌렀으면 한 번 더 누르면 풀립니다. 위 칸에 이름을 치면 빨리 찾습니다.</div><div class="warn"><b>오른쪽 위 + 버튼은 누르지 마세요.</b> 같은 사람이 새로 하나 더 생깁니다. 명단에 없는 처음 온 사람은 리포트의 PEOPLE INFO에 이름을 적어 주세요.</div>`},
+ {t:'리포트 ① 같은 창에서 크루 리포트 쓰기',b:`<p>체크인 화면을 닫고, Breeze 달력에서 <b>같은 크루모임을 다시 누르세요.</b> 창 왼쪽의 <b>크루 리포트 쓰기</b>를 클릭하면 우리 크루 리포트가 열립니다.</p>${img('pop-report.jpg','크루모임 창에서 크루 리포트 쓰기에 빨간 테두리')}<div class="tip">리포트는 Breeze 위쪽 메뉴에는 없습니다. 꼭 이 창에서 여세요. 로그인 없이 열립니다.</div><p class="small">창이 안 보이면 아래 우리 크루 버튼으로 열어도 같습니다.</p><div class="grid">${FORMS.map(([n,c])=>`<a href="https://knockchurch.breezechms.com/form/${c}" target="_blank" rel="noopener">${n}</a>`).join('')}</div>`},
+ {t:'리포트 ② 칸 채우기',b:`${img('form1.jpg','크루 리포트 폼 윗부분')}<table>
+<tr><td>Crew Leader</td><td>우리 크루 리더 이름</td></tr>
+<tr><td>Event Date</td><td>크루나잇 날짜</td></tr>
+<tr><td>토론 주제</td><td>오늘 나눈 크루노트 질문</td></tr>
+<tr><td>EVENT NOTES</td><td>모임 분위기, 특별히 있었던 일</td></tr>
+<tr><td>Prayer Request</td><td>한 사람에 한 줄, <b>이름: 내용</b></td></tr>
+<tr><td>Praise Report</td><td>감사한 일</td></tr>
+<tr><td>PEOPLE INFO</td><td>크루원 소식 (처음 온 사람, 못 온 사람 소식)</td></tr></table>`},
+ {t:'리포트 ③ Submit',b:`<p>별표(*) 칸을 다 채우고 <b>Submit</b>. 우리 크루 리더에게 메일로 바로 갑니다.</p>${img('form2.jpg','폼 아래쪽 Submit 버튼')}<div class="tip">Submit은 <b>한 번만</b> 누르세요. 완료 화면이 나오면 끝입니다. Event Date에는 크루나잇 날짜를 적습니다.</div>`}
+];
+const REPORTER_END=`<table>
+<tr><td>언제</td><td>크루나잇 당일, 체크인과 리포트 둘 다</td></tr>
+<tr><td>내 아이디로</td><td>다른 아이디가 저장돼 있으면 로그아웃하고 내 이메일로</td></tr>
+<tr><td>못 하는 날</td><td>미리 리더에게 말하면 리더가 대신합니다</td></tr></table>`;
+
+const FAQ=[
+['가입했는데 메뉴가 Dashboard · My Profile · Give Now 세 개뿐이에요','정상입니다. 리더나 목사님께 "가입했어요"라고 알리면 우리 크루 권한을 열어 드립니다. 그다음 로그아웃했다가 다시 들어오면 메뉴가 생깁니다.'],
+['초대 메일이 안 와요','스팸함과 프로모션함을 보고, 메일 검색창에 breeze를 쳐 보세요. 계정이 이미 있는 분은 초대 메일이 가지 않습니다. Breeze 로그인 화면에서 Forgot password를 누르고 교회에 등록한 이메일을 넣으면 됩니다.'],
+['Breeze 열기를 누르니 Wrong Address가 떠요','주소창에 knockchurch.breezechms.com 을 직접 입력하세요. 카톡 안에서 열렸다면 크롬이나 사파리로 다시 여세요. (카톡 화면 오른쪽 아래 또는 위의 ··· 메뉴 › 다른 브라우저로 열기)'],
+['사파리나 크롬에서 Breeze가 안 열려요','Breeze는 사파리, 크롬 모두 열립니다. 주소창에 knockchurch.breezechms.com 을 직접 입력해 보세요. 그래도 안 되면 그 화면을 캡처해서 리더에게 보내 주세요.'],
+['체크인하고 나서 누를 버튼이 없어요','저장 버튼은 원래 없습니다. 네모를 누르는 순간 저장되니, 다 체크했으면 그냥 닫으면 체크인 끝입니다.'],
+['리포트(Form)가 어디 있어요?','Breeze 위쪽 메뉴에는 없습니다. 달력에서 우리 크루모임을 누르면 뜨는 창의 <b>크루 리포트 쓰기</b>를 클릭하세요.'],
+['다른 날짜에 체크해 버렸어요','그 날짜의 모임을 다시 열어 체크한 네모를 한 번 더 누르면 풀립니다. 그다음 오늘 날짜 모임에서 다시 체크하세요.'],
+['+ 버튼을 눌러서 사람이 하나 더 생겼어요','리더나 담당 교역자에게 이름을 알려 주세요. 정리해 드립니다. 처음 온 사람은 + 대신 리포트의 PEOPLE INFO에 이름을 적으면 됩니다.'],
+['리포트를 두 번 보냈어요','괜찮습니다. 리더에게 말하면 하나를 정리합니다. Submit은 한 번만 누르면 됩니다.'],
+['노트버드 앱이 안 보여요','노트버드는 따로 설치하는 앱이 없습니다. 크롬이든 사파리든 쓰시는 인터넷으로 my.notebird.app 을 열면 됩니다. 아이폰은 공유 › 홈 화면에 추가, 갤럭시는 점 세 개 › 홈 화면에 추가를 누르면 앱처럼 씁니다.'],
+['비밀번호를 잊었어요','로그인 화면의 Forgot password를 누르면 메일로 다시 정할 수 있습니다.'],
+['리포터는 지난 리포트를 볼 수 없나요?','네, 지난 리포트는 리더만 봅니다. 리포터는 체크인과 리포트 올리기만 하면 됩니다.'],
+];
+const leaderSteps=()=>LEADER_TASKS.map(x=>({t:x.t,d:x.d,b:x.b,k:x.k}));
+const ROLES={
+ leader:{c:'--blue',name:'크루리더',intro:{t:'리더가 할 일은 네 가지',b:`<p>이 순서대로 한 장씩 보여 드립니다. 아는 건 건너뛰어도 됩니다.</p><div class="card">${LEADER_END}</div><div class="tip"><b>01 · 02 · 05 크루</b>는 리더가 리포터 일(체크인 · 크루 리포트)까지 합니다. 처음 화면에서 <b>크루리포터</b>도 함께 보세요.</div><div class="tip"><b>크루리더 허브</b>는 리더용 홈페이지입니다. 아이스브레이커, 크루나잇 순서, 이번 주 크루 디스커션, 이 가이드가 다 모여 있습니다. 휴대폰 홈 화면에 붙여 두세요.</div>${go('https://www.knockchurch.com/crew-leader-hub','크루리더 허브 열기')}`},steps:()=>leaderSteps(),end:LEADER_END},
+ newleader:{c:'--purple',name:'Breeze가 처음인 크루리더',intro:{t:'가입부터 같이 해요',b:`<p>가입은 한 번, 5분이면 됩니다. 그다음 리더가 할 일 네 가지를 보여 드립니다.</p><div class="tip">가입하면 우리 크루의 지난 리포트를 언제든 다시 볼 수 있습니다. 리포트 메일은 가입과 상관없이 옵니다.</div><div class="tip"><b>01 · 02 · 05 크루</b>는 리더가 리포터 일(체크인 · 크루 리포트)까지 합니다. 처음 화면에서 <b>크루리포터</b>도 함께 보세요.</div><div class="tip"><b>크루리더 허브</b>는 리더용 홈페이지입니다. 아이스브레이커, 크루나잇 순서, 이번 주 크루 디스커션, 이 가이드가 다 모여 있습니다. 휴대폰 홈 화면에 붙여 두세요.</div>${go('https://www.knockchurch.com/crew-leader-hub','크루리더 허브 열기')}`},steps:()=>[...SIGNUP_LEADER.map(x=>({...x,d:'가입'})),...leaderSteps()],end:LEADER_END},
+ reporter:{c:'--green',name:'크루리포터',intro:{t:'크루나잇이 끝나면 두 가지',b:`<p>온 사람 <b>체크인</b>, 그리고 <b>크루 기도 리포트</b>. 둘 다 크루나잇 당일에 올립니다.</p><div class="tip">노트버드와 SWOT은 리더 몫입니다. 리포터는 이 두 가지만 하면 됩니다.</div>`},steps:()=>REPORTER.map(x=>({...x,d:''})),end:REPORTER_END}
+};
+
+const $=document.getElementById('app');
+let st={role:null,i:0};
+function setColor(r){document.documentElement.style.setProperty('--c',r?`var(${ROLES[r].c})`:'var(--blue)');}
+function nav(role,i){st={role,i};const h=role?`#${role}/${i}`:'#';try{if(location.hash!==h)history.pushState(null,'',h);}catch(e){}render();scrollTo(0,0);}
+function home(){setColor(null);$.innerHTML=`<main class="fade">
+<span class="eyebrow">노크교회 크루</span>
+<h1>크루 가이드</h1>
+<p class="lede">2주 만에 해도 헷갈리지 않게. 나에게 맞는 문을 고르세요.</p>
+<button class="door" data-r="leader"><span class="dot" style="background:var(--blue)">L</span><span><b>크루리더</b><span>Breeze를 써 본 적 있어요</span></span><span class="chev">›</span></button>
+<button class="door" data-r="newleader"><span class="dot" style="background:var(--purple)">L</span><span><b>크루리더 · Breeze 처음</b><span>가입부터 차근차근</span></span><span class="chev">›</span></button>
+<button class="door" data-r="reporter"><span class="dot" style="background:var(--green)">R</span><span><b>크루리포터</b><span>체크인과 크루 리포트</span></span><span class="chev">›</span></button>
+<button class="door" data-r="faq"><span class="dot" style="background:var(--red)">?</span><span><b>막혔을 때</b><span>자주 묻는 질문 모음</span></span><span class="chev">›</span></button>
+<p class="small" style="margin-top:18px">화면 속 이름과 내용은 일부러 가렸습니다. 막히면 우리 크루 리더나 담당 교역자에게 물어보세요.</p>
+</main>`;
+$.querySelectorAll('.door').forEach(b=>b.onclick=()=>nav(b.dataset.r,0));}
+function faqPage(){setColor(null);$.innerHTML=`<div class="top"><button class="back">‹ 처음</button></div><main class="fade"><span class="eyebrow">막혔을 때</span><h2>자주 묻는 질문</h2><p class="lede">실제로 들어온 질문을 모았습니다. 눌러서 답을 보세요.</p>${FAQ.map(([q,a])=>`<details class="card"><summary style="font-weight:700;cursor:pointer">${q}</summary><p style="margin:10px 0 0;color:var(--sub)">${a}</p></details>`).join('')}<p class="small">여기 없는 문제는 화면을 캡처해서 우리 크루 리더나 담당 교역자에게 보내 주세요.</p></main>`;$.querySelector('.back').onclick=()=>nav(null,0);}
+function render(){
+ if(st.role==='faq')return faqPage();
+ if(!st.role||!ROLES[st.role])return home();
+ const R=ROLES[st.role];setColor(st.role);
+ const steps=R.steps(),N=steps.length,i=Math.max(0,Math.min(st.i,N+1));
+ let body,next='다음',pct=i/(N+1)*100,label=i===0?'시작':i<=N?`${i} / ${N}`:'끝';
+ if(i===0){
+  const jumps=st.role!=='reporter'?`<p class="small" style="margin-top:6px">바로 가기</p><div class="jump">${steps.map((s,j)=>s.k?`<button data-j="${j+1}">${s.k}</button>`:'').join('')}</div>`:'';
+  body=`<span class="eyebrow">${R.name}</span><h2>${R.intro.t}</h2>${R.intro.b}${jumps}`;next='시작하기';
+ }else if(i<=N){
+  const s=steps[i-1];body=`${s.d?`<span class="eyebrow">${s.d}</span>`:''}<h2>${s.t}</h2>${s.b}`;if(i===N)next='다 봤어요';
+ }else{
+  body=`<div class="done"><div class="big">🙌</div><h2>이게 전부입니다</h2><p class="lede">이 화면만 기억하세요.</p></div><div class="card">${R.end}</div>`;next='처음 화면으로';
+ }
+ $.innerHTML=`<div class="top"><button class="back" aria-label="뒤로">‹ ${i===0?'처음':'이전'}</button><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div><span class="count">${label}</span></div>
+<main class="fade">${body}</main>
+<div class="foot">${i>0&&i<=N?'<button class="btn ghost" data-a="prev">이전</button>':''}<button class="btn" data-a="next">${next}</button></div>`;
+ $.querySelector('.back').onclick=()=>i===0?nav(null,0):nav(st.role,i-1);
+ const p=$.querySelector('[data-a=prev]');if(p)p.onclick=()=>nav(st.role,i-1);
+ $.querySelector('[data-a=next]').onclick=()=>i>N?nav(null,0):nav(st.role,i+1);
+ $.querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>nav(st.role,+b.dataset.j));
+}
+function fromHash(){const m=location.hash.match(/^#(\w+)\/(\d+)/);st=m&&(ROLES[m[1]]||m[1]==='faq')?{role:m[1],i:+m[2]}:{role:null,i:0};render();}
+addEventListener('popstate',fromHash);fromHash();
+</script>
+</body>
+</html>

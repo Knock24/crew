@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<title>노크 크루 허브</title>
+<style>
+/* VOICE: 애플 제품 안내처럼 — 말은 적게, 여백은 넓게, 한 화면에 한 가지
+   IDEA: iOS 설정 앱과 '처음 켤 때' 화면 — 넘기면 다음 장, 고르면 체크
+   PICTURE: 화면마다 큰 앱 아이콘 타일 하나와 큰 제목
+   COLOUR and TYPE: #f5f5f7 바탕, 흰 카드, 애플 블루 하나, 완료는 그린 / 시스템 서체(SF·Apple SD Gothic Neo)
+   LAYOUT: 위 세그먼트 진행바, 가운데 카드, 아래 흐린 유리 바에 이전·다음 */
+:root{color-scheme:light dark;
+ --bg:light-dark(#f5f5f7,#000);--card:light-dark(#fff,#1c1c1e);--ink:light-dark(#1d1d1f,#f5f5f7);--sub:light-dark(#515154,#b4b4ba);
+ --sep:light-dark(rgba(60,60,67,.14),rgba(84,84,88,.6));--blue:light-dark(#0071e3,#2997ff);--green:light-dark(#34c759,#30d158);
+ --fill:light-dark(rgba(120,120,128,.12),rgba(120,120,128,.24));--glass:light-dark(rgba(245,245,247,.78),rgba(0,0,0,.72))}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo","Pretendard","Noto Sans KR",system-ui,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-x:clip}
+.app{max-width:520px;margin:0 auto;min-height:100svh;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:2;padding:14px 20px 10px;background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.hrow{display:flex;align-items:center;justify-content:space-between;height:32px}
+.mark{font-weight:800;font-size:15px;letter-spacing:.04em}
+.ctx{font-size:14px;color:var(--sub);font-weight:500}
+.home{border:0;background:var(--fill);color:var(--ink);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;cursor:pointer}
+.home[hidden]{visibility:hidden;display:grid}
+.segs{display:flex;gap:4px;margin-top:10px;height:4px}
+.segs i{flex:1;border-radius:2px;background:var(--fill);overflow:hidden;position:relative}
+.segs i.on::after{content:"";position:absolute;inset:0;background:var(--blue);border-radius:2px}
+main{flex:1;padding:28px 20px 140px}
+.screen{animation:in .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes in{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.still .screen{animation:none}.back .screen{animation-name:inb}@keyframes inb{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.where{display:inline-flex;align-items:center;gap:8px;background:var(--card);border-radius:980px;padding:8px 16px 8px 12px;font-size:16px;font-weight:600;margin-bottom:18px}
+.dot{width:12px;height:12px;border-radius:50%;flex:none}
+.eyebrow{font-size:16px;font-weight:600;color:var(--blue);margin:0 0 4px}
+h1{font-size:36px;line-height:1.12;letter-spacing:-.02em;font-weight:700;margin:0 0 10px;text-wrap:balance}
+.lede b{color:var(--ink);font-weight:600}.lede small{font-size:15px}
+.lede{color:var(--sub);margin:0 0 24px;font-size:18px;line-height:1.5}
+.group{background:var(--card);border-radius:14px;overflow:hidden;margin:0 0 22px}
+.row{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;font-size:18px;padding:12px 16px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;position:relative}
+.row+.row::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
+.row:active{background:var(--fill)}
+.row .tick{margin-left:auto;color:var(--blue);opacity:0;font-weight:700}
+.row[aria-pressed=true] .tick{opacity:1}
+.circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--sep);flex:none;display:grid;place-items:center;transition:.2s}
+.row[aria-pressed=true] .circle{background:var(--green);border-color:var(--green)}
+.circle svg{opacity:0}.row[aria-pressed=true] .circle svg{opacity:1}
+.label{font-size:14px;color:var(--sub);margin:0 0 8px 16px}
+.note{font-size:14px;color:var(--sub);margin:-14px 16px 22px}
+.pill{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:54px;font-size:18px;border-radius:980px;border:0;background:var(--blue);color:#fff;font:inherit;font-weight:600;text-decoration:none;cursor:pointer;margin:0 0 22px}
+.pill.ghost{background:var(--fill);color:var(--blue)}
+.pill:disabled{background:var(--fill);color:var(--sub);cursor:default}
+details.group summary{list-style:none;display:flex;align-items:center;min-height:50px;padding:0 16px;cursor:pointer;color:var(--blue);font-weight:500}
+details.group summary::-webkit-details-marker{display:none}
+details.group summary::after{content:"›";margin-left:auto;color:var(--sub);font-size:22px;transition:transform .2s}
+details[open].group summary::after{transform:rotate(90deg)}
+.inner{padding:0 16px 16px}
+pre{white-space:pre-wrap;margin:0;font-size:16px;line-height:1.55;font-family:inherit;color:var(--ink);background:var(--fill);border-radius:10px;padding:12px 14px}
+.field{display:block;margin:10px 0 0}
+.field span{display:block;font-size:14px;color:var(--sub);margin:0 0 4px}
+.field input,.field textarea{width:100%;font:inherit;font-size:16px;border:0;border-radius:10px;padding:11px 12px;background:var(--fill);color:var(--ink)}
+.field textarea{min-height:64px;resize:vertical}
+.warn{background:var(--card);border-radius:14px;padding:16px;margin:0 0 22px}
+.warn b{color:#ff3b30}
+.warn ol{margin:8px 0 0;padding-left:20px;color:var(--sub);font-size:15px}.warn li{margin:4px 0}
+.donebig{width:88px;height:88px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:8px 0 22px;animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.facts{list-style:none;padding:0;margin:0}
+.facts li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;padding:14px 16px;position:relative}
+.facts li+li::before{content:"";position:absolute;top:0;left:16px;right:0;border-top:.5px solid var(--sep)}
+.facts span{color:var(--sub)}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--sep);padding:12px 20px calc(12px + env(safe-area-inset-bottom))}
+.bar{max-width:480px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.prev{border:0;background:none;color:var(--blue);font:inherit;font-size:17px;padding:12px 4px;cursor:pointer;min-height:44px}
+.prev[hidden]{visibility:hidden;display:block}
+.next{margin:0 0 0 auto;width:auto;min-width:150px;padding:0 28px}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,10px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:980px;font-size:15px;opacity:0;transition:.25s;pointer-events:none;z-index:3}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){.screen,.donebig{animation:none}.toast,.circle{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+ <header>
+  <div class="hrow"><span class="mark">KNOCK</span><span class="ctx" id="ctx"></span>
+   <button class="home" id="home" type="button" aria-label="처음으로"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></button></div>
+  <div class="segs" id="segs" aria-hidden="true"></div>
+ </header>
+ <main id="main"><div id="view"></div></main>
+</div>
+<footer><div class="bar"><button class="prev" id="prev" type="button">‹ 이전</button><button class="pill next" id="next" type="button">다음</button></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+{
+const BC='https://app.basecamp.com/5531745/projects/';
+const ATT='https://app.basecamp.com/5531745/buckets/47650859/questionnaires/10017848628';
+const BREEZE='https://knockchurch.breezechms.com';
+const REPORT_FORM='';
+const NOTEBIRD='https://my.notebird.app';
+const FORMS={'01':'30c5708939','02':'30c5708947','03':'30c5708912','04':'30c5708936','05':'30c57089364139','06':'30c570893641','07':'30c57089','08':'30c570894734'};
+const GUIDE='https://knock24.github.io/crew/guide/';
+const LGUIDE='https://knock24.github.io/crew/guide/';
+const CREWS=[['01','01 화요 온라인','47240707',1],['02','02 화요 저녁','47240560',1],['03','03 수요 오전','47240715'],['04','04 목요 저녁','47240720'],
+ ['05','05 금요 저녁','47240723',1],['06','06 토요 오전','47240729'],['07','07 토요 오후','47240939'],['08','08 토요 강서','47240913']].map(([id,name,bc,dual])=>({id,name,bc,dual:!!dual,form:'https://knockchurch.breezechms.com/form/'+FORMS[id]}));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const now=new Date(),due=new Date(now);due.setHours(21,0,0,0);due.setDate(now.getDate()+((7-now.getDay())%7));if(due<now)due.setDate(due.getDate()+7);
+const md=d=>`${d.getMonth()+1}/${d.getDate()}`,ymd=d=>`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`;
+const WK='hub.done.'+ymd(due);
+let role=store.get('hub.role',null),crewId=store.get('hub.crew',null),done=store.get(WK,{}),pages=[],dir=1;
+const crew=()=>CREWS.find(c=>c.id===crewId);
+let i=role&&crew()?2:0;
+
+const CHECK='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const tag=(name,c)=>`<div class="where"><span class="dot" style="background:${c}"></span>${name}에서 합니다</div>`;
+const APP={bc:tag('베이스캠프','#1fb36b'),br:tag('Breeze (브리즈)','#6aae3d'),nb:tag('노트버드','#2f7bf5'),key:tag('Breeze 로그인','#ff9500')};
+const go=(href,t)=>`<a class="pill" href="${href}" target="_blank" rel="noopener">${t} <span aria-hidden="true">↗</span></a>`;
+const copyGo=href=>`<a class="pill" data-copygo href="${href}" target="_blank" rel="noopener" style="margin:14px 0 6px">복사하고 베이스캠프로 가기 ↗</a><p class="note" style="margin:0">베이스캠프가 열리면 입력칸을 길게 눌러 <b>붙여넣기</b>만 하세요.</p>`;
+const fold=(t,body)=>`<details class="group"><summary>${t}</summary><div class="inner">${body}</div></details>`;
+
+const T={
+ login:{title:'내 아이디로 로그인',ok:[['ok','내 이름 확인']]},
+ checkin:{title:'온 사람 체크인',ok:[['ok','체크인 완료']]},
+ report:{title:'CREW REPORT 제출',ok:[['ok','리포트 제출 완료']]},
+ swot:{title:'SWOT 올리기',ok:[['ok','SWOT 올림']]},
+ att:{title:'주일출석보고',ok:[['ok','출석보고 완료']]},
+ care:{title:'돌봄 기록',multi:true,ok:[['abs','결석자 기록 완료'],['two','모든 크루원 2주 안에 기록']],note:'결석자가 없으면 첫 번째는 바로 체크하세요.'}
+};
+const P={
+ role:()=>`<p class="eyebrow">크루 허브</p><h1>나는</h1><p class="lede">고르고 다음을 누르세요.</p>
+  <div class="group">${[['leader','크루리더'],['reporter','크루리포터']].map(([v,l])=>`<button class="row" data-role="${v}" aria-pressed="${role===v}">${l}<span class="tick">✓</span></button>`).join('')}</div>`,
+ crew:()=>`<p class="eyebrow">${role==='leader'?'크루리더':'크루리포터'}</p><h1>우리 크루는</h1><p class="lede">한 번 고르면 이 휴대폰이 기억합니다.</p>
+  <div class="group">${CREWS.map(c=>`<button class="row" data-crew="${c.id}" aria-pressed="${c.id===crewId}">${esc(c.name)}<span class="tick">✓</span></button>`).join('')}</div>`,
+ login:()=>`<p class="eyebrow">시작 전에</p><h1>리포트 쓸 준비<br>되셨나요?</h1><p class="lede">먼저 <b>Breeze</b>에 내 아이디로 로그인해 주세요.</p>
+  <div class="warn"><b>꼭 내 아이디로 들어오세요.</b> 다른 아이디가 저장되어 있으면 로그아웃하고 내 이메일로 들어옵니다.
+  <ol><li>처음이면 초대 메일을 수락하고 아이디를 내 이메일로 정합니다.</li><li>들어온 뒤 오른쪽 위 이름이 내 이름인지 봅니다.</li><li>비밀번호를 잊으면 Forgot Password?</li><li>가입 직후 메뉴가 <b>Dashboard · My Profile · Give Now</b> 세 개만 보이면 정상입니다. 리더에게 "가입했어요"라고 알리면 권한이 열립니다.</li></ol><p style="margin:8px 0 0;font-size:14px">버튼이 안 되면 주소창에 <b>knockchurch.breezechms.com</b>을 직접 입력하세요.</p></div>`+go(BREEZE+'/login','Breeze 열기')+fold('막혔을 때 · 자주 묻는 질문',`<p style="margin:0 0 10px"><b>메뉴가 세 개뿐이에요</b><br>정상입니다. 리더에게 “가입했어요”라고 알리면 권한이 열립니다. 로그아웃 후 다시 들어오세요.</p><p style="margin:0 0 10px"><b>초대 메일이 안 와요</b><br>스팸함을 보세요. 계정이 이미 있으면 메일이 안 갑니다. 로그인 화면의 Forgot password로 시작하세요.</p><p style="margin:0 0 10px"><b>Wrong Address가 떠요 / Breeze가 안 열려요</b><br>주소창에 knockchurch.breezechms.com 을 직접 입력하세요. 카톡 안에서 열렸다면 크롬이나 사파리로 다시 여세요.</p><p style="margin:0 0 10px"><b>체크인 다음에 누를 버튼이 없어요</b><br>저장 버튼은 원래 없습니다. 닫으면 끝입니다. 리포트는 같은 모임 창의 크루 리포트 쓰기로 엽니다.</p><p style="margin:0 0 10px"><b>다른 날짜에 체크했어요</b><br>그 날짜 모임을 다시 열어 네모를 한 번 더 누르면 풀립니다.</p><p style="margin:0 0 10px"><b>+ 버튼을 눌렀어요</b><br>리더에게 이름을 알려 주세요. 정리해 드립니다.</p><p style="margin:0 0 10px"><b>리포트를 두 번 보냈어요</b><br>리더에게 말하면 하나를 정리합니다.</p><p style="margin:0 0 10px"><b>노트버드 앱이 없어요</b><br>앱은 따로 없습니다. 크롬이든 사파리든 인터넷으로 열고 홈 화면에 추가하세요.</p>`)+`<a class="pill ghost" href="${GUIDE}" target="_blank" rel="noopener">사진으로 보는 설명서</a>`,
+ checkin:()=>`<p class="eyebrow">크루나잇 당일 · 끝나고 바로</p><h1>오늘 크루나잇에<br>누가 왔나요?</h1><p class="lede"><b>Breeze</b>에서 체크인해 주세요.<br><small>Events › 오늘 크루모임 › Check-In</small></p>`+go(BREEZE+'/events','Breeze 체크인')+`<div class="warn" style="margin-top:12px"><b>헷갈리기 쉬운 곳</b><ol><li>달력에서 <b>오늘 날짜</b>의 우리 크루모임을 고릅니다. 다른 날짜에 체크하면 기록이 틀어집니다.</li><li>모임 창에서 <b>오른쪽 초록색 Check In</b> 버튼을 누릅니다. 창 왼쪽의 ‘크루 리포트 쓰기’는 체크인을 마친 다음에 누릅니다.</li><li>네모를 누르면 <b>바로 저장</b>됩니다. 저장 버튼은 없습니다. 다 체크했으면 그냥 닫으면 끝입니다. 잘못 눌렀으면 한 번 더 누르면 풀립니다.</li><li>오른쪽 위 <b>+ 버튼은 누르지 마세요.</b> 같은 사람이 새로 하나 더 생깁니다. 명단에 없는 처음 온 사람은 리포트의 PEOPLE INFO에 이름을 적어 주세요.</li></ol></div>`,
+ report:()=>`<p class="eyebrow">크루나잇 당일 · 체크인 이어서</p><h1>오늘 어떤 이야기를<br>나눴나요?</h1><p class="lede"><b>Breeze CREW REPORT</b>에 남겨 주세요. 리더에게 바로 전달됩니다.</p>`+go(crew().form,'우리 크루 리포트 열기')+`<div class="warn" style="margin-top:12px"><b>헷갈리기 쉬운 곳</b><ol><li>Breeze에서 체크인을 마쳤다면, 달력에서 <b>같은 크루모임을 다시 눌러</b> 창 왼쪽의 <b>크루 리포트 쓰기</b>를 클릭합니다. 리포트는 Breeze 위쪽 메뉴에는 없습니다. 이 버튼으로 열어도 같습니다.</li><li>Event Date에는 <b>크루나잇 날짜</b>를 적습니다.</li><li>Submit은 <b>한 번만</b> 누릅니다. "successfully" 화면이 나오면 끝입니다.</li></ol></div>`+
+  fold('이렇게 적어요',`<pre>작성자: 홍길동\n날짜: 11/28 (토)\n나눔 주제: 크루노트 질문 2번\n기도제목: 박○○ 이직 준비\n감사제목: 이○○ 새 직장 첫 출근</pre>`),
+ swot:()=>`<p class="eyebrow">크루나잇 당일</p><h1>오늘 크루나잇 모임<br>어땠나요?</h1><p class="lede"><b>베이스캠프</b>에 SWOT으로 기록해 주세요.</p>`+go(BC+crew().bc,'베이스캠프 열기')+fold('막혔을 때 · 자주 묻는 질문',`<p style="margin:0 0 10px"><b>메뉴가 세 개뿐이에요</b><br>정상입니다. 리더에게 “가입했어요”라고 알리면 권한이 열립니다. 로그아웃 후 다시 들어오세요.</p><p style="margin:0 0 10px"><b>초대 메일이 안 와요</b><br>스팸함을 보세요. 계정이 이미 있으면 메일이 안 갑니다. 로그인 화면의 Forgot password로 시작하세요.</p><p style="margin:0 0 10px"><b>Wrong Address가 떠요 / Breeze가 안 열려요</b><br>주소창에 knockchurch.breezechms.com 을 직접 입력하세요. 카톡 안에서 열렸다면 크롬이나 사파리로 다시 여세요.</p><p style="margin:0 0 10px"><b>체크인 다음에 누를 버튼이 없어요</b><br>저장 버튼은 원래 없습니다. 닫으면 끝입니다. 리포트는 같은 모임 창의 크루 리포트 쓰기로 엽니다.</p><p style="margin:0 0 10px"><b>다른 날짜에 체크했어요</b><br>그 날짜 모임을 다시 열어 네모를 한 번 더 누르면 풀립니다.</p><p style="margin:0 0 10px"><b>+ 버튼을 눌렀어요</b><br>리더에게 이름을 알려 주세요. 정리해 드립니다.</p><p style="margin:0 0 10px"><b>리포트를 두 번 보냈어요</b><br>리더에게 말하면 하나를 정리합니다.</p><p style="margin:0 0 10px"><b>노트버드 앱이 없어요</b><br>앱은 따로 없습니다. 크롬이든 사파리든 인터넷으로 열고 홈 화면에 추가하세요.</p>`)+
+  fold('칸 채워서 글 만들기',['강점','약점','기회','위협'].map((h,n)=>`<label class="field"><span>${h}</span><textarea id="sw${n}"></textarea></label>`).join('')+`<label class="field"><span>미리보기</span><pre id="out"></pre></label>${copyGo(BC+crew().bc)}`),
+ att:()=>`<p class="eyebrow">주일 오후 9시까지 · 질문은 오후 5시</p><h1>이번 주일,<br>우리 크루 다 모였나요?</h1><p class="lede"><b>베이스캠프</b> 주일출석보고에 답해 주세요.</p>`+go(ATT,'출석보고 답하기')+
+  fold('칸 채워서 글 만들기',`<label class="field"><span>총원</span><input id="attN" inputmode="numeric"></label><label class="field"><span>결석자 (한 줄에 한 명: 이름 사유)</span><textarea id="attA" placeholder="김○○ 몸살"></textarea></label><label class="field"><span>미리보기</span><pre id="out"></pre></label>${copyGo(ATT)}`),
+ care:()=>`<p class="eyebrow">결석자는 주일 오후 9시까지 · 모두 2주 안에</p><h1>주일 결석한 사람,<br>2주 넘게 기록 못 한<br>사람이 있나요?</h1><p class="lede"><b>노트버드</b>에 기록해 주세요.</p>
+  <ul class="group facts"><li><b>1 주일 결석자 먼저</b><span>이번 주</span></li><li><b>2 모든 크루원</b><span>2주를 넘기지 않게</span></li></ul><p class="note" style="margin-top:-12px">리포트 메일로 온 기도제목은 쓸 때 참고합니다.</p>`+go(NOTEBIRD,'노트버드 열기')+`<p class="note">노트버드는 따로 설치하는 앱이 없습니다. 크롬이든 사파리든 쓰시는 인터넷으로 열면 됩니다. 아이폰은 공유 › 홈 화면에 추가, 갤럭시는 점 세 개 › 홈 화면에 추가를 누르면 앱처럼 씁니다.</p>`+
+  fold('이렇게 적어요',`<pre>김○○ — 주일 결석\n12/1 통화. 몸살로 많이 지쳐 있음. 함께 기도함.\n→ 수요일 안부 연락.\n\n이○○ — 정기 돌봄 (마지막 기록 2주 전)\n12/2 카톡 안부. 요즘 회사 일로 바쁨. 크루나잇 기도제목: 이직 준비.\n→ 다음 주일 따로 인사하기.</pre>`),
+ done:()=>{const left=tasks().filter(k=>!isDone(k));
+  if(left.length)return `<p class="eyebrow">거의 다 왔어요</p><h1>${left.length}개만 더 하면<br>이번 주 끝!</h1><p class="lede">눌러서 마저 해 주세요.</p><div class="group">${left.map(k=>`<button class="row" data-go="${k}">${T[k].title}<span class="tick" style="opacity:1;color:var(--sub)">›</span></button>`).join('')}</div>`;
+  return `<div class="donebig" aria-hidden="true"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <p class="eyebrow" style="color:var(--green)">완료 · ${esc(done._at||'')}</p><h1>수고하셨어요.<br>이번 주도 한 사람도<br>놓치지 않았습니다.</h1>
+  <ul class="group facts"><li><span>SWOT · 리포트</span>크루나잇 당일</li><li><span>주일출석 · 결석자 기록</span>주일 오후 9시</li><li><span>모든 크루원</span>2주 안에 기록</li><li><span>리포터가 빠지면</span>리더가 대신</li><li><span>확인</span>화요일 교역자회의</li></ul>
+  <p class="lede" style="font-size:15px">아이폰은 공유 › 홈 화면에 추가, 갤럭시는 점 세 개 › 홈 화면에 추가하면 앱처럼 열립니다. (사파리, 크롬 모두 됩니다)</p><a class="pill ghost" href="${role==='leader'?LGUIDE:GUIDE}" target="_blank" rel="noopener">사진으로 보는 ${role==='leader'?'리더':'리포터'} 설명서</a>`}
+};
+const isDone=k=>T[k]&&T[k].multi?T[k].ok.every(([v])=>done[k]&&done[k][v]):!!done[k];
+function tasks(){const c=crew();if(!role||!c)return[];
+ if(role==='reporter')return['login','checkin','report'];
+ return c.dual?['login','checkin','report','swot','att','care']:['swot','att','care']}
+function build(){const t=tasks();return['role','crew',...t,...(t.length?['done']:[])]}
+function stamp(){const t=tasks();if(t.every(isDone)){if(!done._at){const d=new Date();done._at=`${md(d)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}}else delete done._at;store.set(WK,done)}
+
+function show(){
+ pages=build();i=Math.max(0,Math.min(i,pages.length-1));
+ const k=pages[i],t=tasks();
+ let h=`<section class="screen">${P[k]()}`;
+ if(T[k])h+=`<p class="label">마쳤으면 체크</p><div class="group">${T[k].ok.map(([v,l])=>`<button class="row" data-ok="${v}" aria-pressed="${T[k].multi?!!(done[k]&&done[k][v]):done[k]===v}"><span class="circle">${CHECK}</span>${l}</button>`).join('')}</div>`+(T[k].note?`<p class="note">${T[k].note}</p>`:'');
+ document.getElementById('view').innerHTML=h+'</section>';
+ document.getElementById('main').className=dir<0?'back':dir===0?'still':'';
+ const c=crew();
+ document.getElementById('ctx').textContent=c&&role&&i>=2?`${c.name.slice(3)} · ${role==='leader'?'리더':'리포터'}${k!=='done'?` · ${i-1}/${t.length}`:''}`:'';
+ document.getElementById('segs').innerHTML=i>=2&&t.length?t.map((x,n)=>`<i class="${n<=i-2?'on':''}"></i>`).join(''):'';
+ const prev=document.getElementById('prev'),next=document.getElementById('next');
+ prev.hidden=i===0;document.getElementById('home').hidden=i===0;
+ next.hidden=k==='done';document.querySelector('footer').style.display=k==='done'&&t.every(isDone)?'none':'';
+ next.disabled=k==='role'?!role:k==='crew'?!crew():T[k]?!isDone(k):false;
+ next.textContent=pages[i+1]==='done'?'완료':'다음';
+ if(k==='swot'||k==='att')bindMini(k);
+ window.scrollTo({top:0});
+}
+function bindMini(k){
+ const out=document.getElementById('out'),c=crew();
+ const up=k==='att'?()=>{const rows=document.getElementById('attA').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  out.textContent=`${ymd(due)} ${c.name.slice(3)}크루\n총원 ${document.getElementById('attN').value||'_'}명\n결석 ${rows.length}명`+rows.map(r=>{const s=r.indexOf(' ');return '\n'+(s>0?`${r.slice(0,s)}(${r.slice(s+1)})`:r)}).join('')}
+ :()=>{const v=[0,1,2,3].map(n=>document.getElementById('sw'+n).value.trim()||'-');
+  out.textContent=`${ymd(now)} ${c.name.slice(3)}크루 SWOT\n\n강점\n${v[0]}\n\n약점\n${v[1]}\n\n기회\n${v[2]}\n\n위협\n${v[3]}`};
+ document.querySelectorAll('.field input,.field textarea').forEach(el=>el.addEventListener('input',up));up();
+}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1600)}
+
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-copygo]');if(!a)return;const t=document.getElementById('out').textContent;
+ try{navigator.clipboard.writeText(t).then(()=>toast('복사했습니다. 붙여넣기 하세요'),()=>{})}catch(err){}});
+document.addEventListener('click',async e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.role){role=b.dataset.role;store.set('hub.role',role);dir=0;show()}
+ else if(b.dataset.crew){crewId=b.dataset.crew;store.set('hub.crew',crewId);dir=0;show()}
+ else if(b.dataset.ok){const k=pages[i],v=b.dataset.ok;if(T[k].multi){const o=Object.assign({},done[k]);o[v]=!o[v];done[k]=o}else{done[k]=done[k]===v?undefined:v;if(!done[k])delete done[k]}stamp();dir=0;show()}
+ else if(b.dataset.go){i=pages.indexOf(b.dataset.go);dir=-1;show()}
+ else if(b.id==='next'){if(!b.disabled){i++;dir=1;show()}}
+ else if(b.id==='prev'){i--;dir=-1;show()}
+ else if(b.id==='home'){i=0;dir=-1;show()}
+ else if('copy' in b.dataset){const el=document.getElementById('out');
+  try{await navigator.clipboard.writeText(el.textContent);toast('복사했습니다')}catch(err){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('길게 눌러 복사하세요')}}
+});
+show();
+}
+</script>
+</body>
+</html>
